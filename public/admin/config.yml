@@ -1,27 +1,22 @@
 # ============================================================
 # Decap CMS 配置（可视化内容后台）
-# 网站上线后，用浏览器打开 /admin 即可像填表单一样改内容、传图片。
+# 上线后用浏览器打开 /admin 即可像填表单一样改内容、传图片。
 #
-# ⚠️ 正式上线前，你必须修改下面 2 处（已用【】标出）：
-#   1. backend.repo    -> 改成你自己的 GitHub 仓库，格式 owner/name
-#   2. backend.base_url -> 改成网站正式域名（用于 GitHub 登录回调）
-#   3. 并在 GitHub 创建一个 OAuth App，回调地址填：https://你的域名/admin/
-#   详细步骤见项目根目录《自助编辑上线指南.md》
+# 本配置使用 Netlify + Git Gateway 登录（最省事，无需自建 OAuth 服务）：
+#   - 站点托管在 Netlify，后台登录由 Netlify Identity 提供
+#   - 你在 /admin 的每次修改，会自动提交到 GitHub 仓库并触发 Netlify 重新构建
+# 详见项目根目录《自助编辑上线指南.md》
 # ============================================================
 
 backend:
-  name: github
-  repo: "【你的GitHub用户名】/【你的仓库名】"   # 例如：liangcheng/portfolio
+  name: git-gateway
   branch: main
-  base_url: "https://【你的域名】"              # 例如：https://liangcheng.netlify.app
 
-local_backend: false
-
-# 图片上传目录：后台拖图会自动存到这里，并在页面里以 /uploads/xxx.png 引用
+# 图片上传目录：后台拖图会自动存到这里，页面以 /uploads/xxx.png 引用
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
-# 保存即直接提交到仓库（部署平台会自动重建网站）
+# 保存即直接提交到仓库（Netlify 会自动重建网站）
 publish_mode: simple
 
 collections:
