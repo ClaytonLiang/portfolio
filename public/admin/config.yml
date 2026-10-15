@@ -1,0 +1,118 @@
+# ============================================================
+# Decap CMS 配置（可视化内容后台）
+# 网站上线后，用浏览器打开 /admin 即可像填表单一样改内容、传图片。
+#
+# ⚠️ 正式上线前，你必须修改下面 2 处（已用【】标出）：
+#   1. backend.repo    -> 改成你自己的 GitHub 仓库，格式 owner/name
+#   2. backend.base_url -> 改成网站正式域名（用于 GitHub 登录回调）
+#   3. 并在 GitHub 创建一个 OAuth App，回调地址填：https://你的域名/admin/
+#   详细步骤见项目根目录《自助编辑上线指南.md》
+# ============================================================
+
+backend:
+  name: github
+  repo: "【你的GitHub用户名】/【你的仓库名】"   # 例如：liangcheng/portfolio
+  branch: main
+  base_url: "https://【你的域名】"              # 例如：https://liangcheng.netlify.app
+
+local_backend: false
+
+# 图片上传目录：后台拖图会自动存到这里，并在页面里以 /uploads/xxx.png 引用
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+# 保存即直接提交到仓库（部署平台会自动重建网站）
+publish_mode: simple
+
+collections:
+  # ---------- 案例作品 ----------
+  - name: "projects"
+    label: "案例作品"
+    label_singular: "案例"
+    folder: "src/content/projects"
+    create: true
+    slug: "{{slug}}"
+    extension: mdx
+    editor:
+      preview: false
+    fields:
+      - { name: title, label: "案例标题", widget: string, required: true }
+      - { name: role, label: "你的角色", widget: string }
+      - { name: year, label: "年份", widget: number, default: 2025 }
+      - { name: duration, label: "项目周期（如 4 个月）", widget: string, required: false }
+      - { name: teamSize, label: "团队规模（人）", widget: number, required: false }
+      - { name: outcomeSummary, label: "一句话成果摘要", widget: text }
+      - { name: coverImage, label: "封面图（从电脑选择 / 拖入）", widget: image, required: false }
+      - { name: overview, label: "概述", widget: text }
+      - { name: problem, label: "挑战", widget: text }
+      - { name: constraints, label: "限制条件", widget: list, field: { name: item, label: "要点", widget: text } }
+      - { name: approach, label: "策略", widget: text }
+      - name: keyDecisions
+        label: "关键动作"
+        widget: list
+        field:
+          name: item
+          label: "动作"
+          widget: object
+          fields:
+            - { name: decision, label: "动作名称", widget: string }
+            - { name: reasoning, label: "理由", widget: text }
+            - name: alternatives
+              label: "备选方案"
+              widget: list
+              required: false
+              field: { name: item, label: "方案", widget: string }
+      - name: techStack
+        label: "工具与渠道"
+        widget: list
+        field: { name: item, label: "项", widget: string }
+      - name: impact
+        label: "成果与影响"
+        widget: object
+        fields:
+          - name: metrics
+            label: "量化指标"
+            widget: list
+            required: false
+            field:
+              name: item
+              label: "指标"
+              widget: object
+              fields:
+                - { name: label, label: "指标名", widget: string }
+                - { name: value, label: "数值", widget: string }
+          - { name: qualitative, label: "定性描述", widget: text }
+      - { name: learnings, label: "复盘", widget: list, field: { name: item, label: "要点", widget: text } }
+      - { name: featured, label: "首页精选", widget: boolean, default: false }
+      - { name: status, label: "状态", widget: select, options: [completed, ongoing, archived], default: completed }
+      - { name: order, label: "排序（数字越小越靠前）", widget: number, required: false }
+      - name: relatedProjects
+        label: "相关案例（填 slug）"
+        widget: list
+        required: false
+        field: { name: item, label: "slug", widget: string }
+      - name: relatedDecisions
+        label: "相关决策（填 slug）"
+        widget: list
+        required: false
+        field: { name: item, label: "slug", widget: string }
+
+  # ---------- 推荐语 ----------
+  - name: "testimonials"
+    label: "推荐语"
+    label_singular: "推荐语"
+    folder: "src/content/testimonials"
+    create: true
+    slug: "{{slug}}"
+    extension: mdx
+    editor:
+      preview: false
+    fields:
+      - { name: name, label: "推荐人姓名", widget: string, required: true }
+      - { name: role, label: "职位", widget: string }
+      - { name: company, label: "单位", widget: string }
+      - { name: relationship, label: "与你的关系", widget: string, required: false }
+      - { name: quote, label: "评价内容", widget: text }
+      - { name: linkedin, label: "LinkedIn 链接", widget: string, required: false }
+      - { name: featured, label: "首页显示", widget: boolean, default: false }
+      - { name: date, label: "日期", widget: datetime, required: false }

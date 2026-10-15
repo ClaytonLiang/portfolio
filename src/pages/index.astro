@@ -1,0 +1,503 @@
+---
+/**
+ * 首页（作品集）
+ *
+ * 杂志编辑感的首页：以「精选案例」英雄区开场，随后是个人简介、核心能力板块、
+ * 推荐语与工作理念，并提供明确的求职/合作入口。
+ *
+ * 区块：
+ * 1. Hero —— 价值主张 + 精选案例速览
+ * 2. 简介 —— 简短个人介绍
+ * 3. 核心能力 —— 品牌建设 / 产品营销 / 电商视觉 / 内容运营 / 渠道拓展
+ * 4. 推荐语 —— 来自合作方/客户的社媒证明
+ * 5. 工作理念 —— 方法论与价值观
+ * 6. CTA —— 求职 / 合作入口
+ *
+ * 占位说明：所有涉及个人经历与业绩的数字均为【占位】，请替换为真实内容。
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEO from '../components/SEO.astro';
+import StructuredData from '../components/StructuredData.astro';
+import ForwardLink from '../components/ForwardLink.astro';
+import Testimonials from '../components/Testimonials.astro';
+import { getCollection } from 'astro:content';
+import { siteConfig } from '../config';
+
+/**
+ * 精选案例（featured）用于英雄区速览，最多取 3 条
+ */
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects
+  .filter((project) => project.data.featured === true)
+  .sort((a, b) => (a.data.order || 999) - (b.data.order || 999))
+  .slice(0, 3);
+
+/**
+ * 核心能力（基于简历真实经历提炼）
+ */
+const capabilities = [
+  {
+    no: '01',
+    title: '活动策划与提案',
+    desc: '聚焦 B 端年会、经销商大会等高规格项目，完成 10+ 份全案策划并多次通过大型甲方技术标筛选。',
+  },
+  {
+    no: '02',
+    title: '视觉物料设计',
+    desc: '将复杂策划逻辑转化为直观、精美的视觉语言，产出 20+ 款海报/PPT/物料，提升竞标专业度。',
+  },
+  {
+    no: '03',
+    title: '新媒体内容运营',
+    desc: '小红书账号从 0 到 1 冷启动（粉丝 0→1300+、单篇 10w+），并独立运营官方公众号矩阵。',
+  },
+  {
+    no: '04',
+    title: '品牌与文化建设',
+    desc: '搭建账号视觉体系与区域文化宣传内容，在专业性表达与大众可读性之间取得平衡。',
+  },
+  {
+    no: '05',
+    title: '大型活动统筹执行',
+    desc: '独立落地 200 人高端论坛（互动率 85%），统筹千人级校园活动实现零失误落地。',
+  },
+];
+---
+
+<BaseLayout>
+  <SEO
+    slot="head"
+    title={`${siteConfig.author.name} · ${siteConfig.author.title}`}
+    description={siteConfig.description}
+    type="website"
+    noSuffix
+  />
+
+  <StructuredData type="WebSite" />
+  <StructuredData type="Person" />
+
+  <main class="home-page">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <p class="hero-kicker">作品集 · PORTFOLIO</p>
+          <h1 class="hero-title">
+            用案例说话的<br />
+            <span class="hero-title-emphasis">品牌与营销实践</span>
+          </h1>
+          <p class="hero-sub">
+            这里收录的是真实项目，而非作品截图——每一个案例都呈现背景、策略与可衡量的结果。
+          </p>
+          <p class="hero-meta">
+            {siteConfig.author.name} · {siteConfig.author.title}
+          </p>
+          <div class="hero-cta">
+            <a href="/projects" class="btn-primary">浏览作品</a>
+            <a href="/contact" class="btn-secondary">联系我</a>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="case-snapshots">
+            {featuredProjects.map((project) => (
+              <a href={`/projects/${project.id}`} class="case-snapshot">
+                <span class="case-label">案例 · {project.data.role}</span>
+                <span class="case-title">{project.data.title}</span>
+                <span class="case-outcome">{project.data.outcomeSummary}</span>
+              </a>
+            ))}
+            {featuredProjects.length === 0 && (
+              <p class="case-empty">【占位】在 src/content/projects 中标记 featured: true 的案例将显示在此处。</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 简介 -->
+    <section class="introduction">
+      <p>
+        我是 {siteConfig.author.name}，{siteConfig.author.title}。
+      </p>
+      <p>
+        {siteConfig.author.bio}
+      </p>
+      <ForwardLink href="/projects" text="查看全部案例" variant="muted" />
+    </section>
+
+    <!-- 核心能力 -->
+    <section class="capabilities">
+      <div class="section-header">
+        <h2>核心能力</h2>
+        <span class="section-note">Capabilities</span>
+      </div>
+      <div class="capabilities-grid">
+        {capabilities.map((cap) => (
+          <article class="capability-item">
+            <span class="capability-no">{cap.no}</span>
+            <h3 class="capability-title">{cap.title}</h3>
+            <p class="capability-desc">{cap.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 推荐语 -->
+    <Testimonials limit={3} />
+
+    <!-- 工作理念 -->
+    <section class="thinking">
+      <h2>工作理念</h2>
+      <p class="thinking-list">
+        先想清楚再动手 · 用数据而非感觉做决策 · 视觉服务于转化 · 内容要可沉淀、可复用 · 渠道之间不是割裂而是协同 · 把每一次项目都当作长期资产的积累
+      </p>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+      <h2>一起做点漂亮的事</h2>
+      <p>
+        正在寻找活动策划、新媒体运营或视觉物料方向的合作与机会。欢迎聊聊你的需求。
+      </p>
+      <div class="cta-buttons">
+        <a href="/projects" class="btn-primary">查看作品</a>
+        <a href="/contact" class="btn-secondary">取得联系</a>
+      </div>
+    </section>
+  </main>
+
+  <style>
+    .home-page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    .hero {
+      padding: 4rem 0 5rem;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 4rem;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .hero-left {
+      padding-right: 2rem;
+    }
+
+    .hero-kicker {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      line-height: 1.18;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+      color: var(--color-text);
+    }
+
+    .hero-title-emphasis {
+      color: var(--color-text-secondary);
+    }
+
+    .hero-sub {
+      font-size: 1.125rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .hero-meta {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      margin-bottom: 2rem;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: var(--color-text);
+      color: var(--color-bg);
+      font-weight: 600;
+      font-size: 0.9375rem;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.85;
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      color: var(--color-text);
+      font-weight: 500;
+      font-size: 0.9375rem;
+      text-decoration: none;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      transition: border-color 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-text-secondary);
+    }
+
+    .hero-right {
+      padding-top: 0.5rem;
+    }
+
+    .case-snapshots {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .case-snapshot {
+      display: block;
+      padding: 1.25rem 1.5rem;
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      text-decoration: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .case-snapshot:hover {
+      border-color: var(--color-text-muted);
+      background: var(--color-bg-elevated);
+    }
+
+    .case-label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-muted);
+      margin-bottom: 0.375rem;
+    }
+
+    .case-title {
+      display: block;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .case-outcome {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    .case-empty {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      padding: 1.25rem 1.5rem;
+      border: 1px dashed var(--color-border);
+      border-radius: 8px;
+    }
+
+    .introduction {
+      max-width: 640px;
+      margin-bottom: 5rem;
+      font-size: 1.125rem;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+    }
+
+    .introduction p {
+      margin-bottom: 1rem;
+    }
+
+    .introduction p:first-child {
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    .capabilities {
+      margin-bottom: 5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .section-note {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+    }
+
+    .capabilities-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .capability-item {
+      padding: 1.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-bg-secondary);
+    }
+
+    .capability-no {
+      display: block;
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      color: var(--color-text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .capability-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .capability-desc {
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+    }
+
+    .thinking {
+      margin-bottom: 5rem;
+    }
+
+    .thinking h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.01em;
+    }
+
+    .thinking-list {
+      font-size: 1.0625rem;
+      line-height: 1.9;
+      color: var(--color-text-secondary);
+      max-width: 680px;
+    }
+
+    .cta {
+      padding: 3rem 0;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .cta h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .cta p {
+      font-size: 1rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 1.5rem;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .capabilities-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .home-page {
+        padding: 0 1rem 3rem;
+      }
+
+      .hero {
+        padding: 2.5rem 0 3rem;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .hero-left {
+        padding-right: 0;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-cta {
+        flex-direction: column;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        text-align: center;
+        width: 100%;
+      }
+
+      .capabilities-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .introduction {
+        font-size: 1rem;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+      }
+
+      .cta-buttons .btn-primary,
+      .cta-buttons .btn-secondary {
+        width: 100%;
+      }
+    }
+  </style>
+</BaseLayout>
